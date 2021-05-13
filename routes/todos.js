@@ -63,6 +63,44 @@ router.get("/:username", async (req, res) => {
       });
     }
   });
+router.put('/:username/:id', async(req,res) => {
+  try{
+    let client = getClient();
+    await client.connect();
+    const db = client.db('todoDB');
+    const TODO = db.collection('todo')
+    res.json({
+      ok:true,
+      todo: await TODO.updateOne({ username: req.params.username },{$set: {todos: { todo: req.body.todo}}})
+    })
+  } catch (error) {
+    console.log(error);
+    res.json({
+      ok: false,
+      error,
+    });
+  }
+  
+})
 
+router.delete('/:username/todos/:id', async(req,res) => {
+  try{
+    let client = getClient();
+    await client.connect();
+    const db = client.db('todoDB');
+    const TODO = db.collection('todo')
+    res.json({
+      ok:true,
+      todo: await TODO.deleteOne({ username: req.params.username },{todo:req.params.id},{todos:{todo:req.body.todo}})
+    })
+  } catch (error) {
+    console.log(error);
+    res.json({
+      ok: false,
+      error,
+    });
+  }
+  
+})
 
 module.exports = router;
