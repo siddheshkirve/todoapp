@@ -23,6 +23,8 @@ router.post('/:username' , async (req, res) => {
          * If todo is empty string, throw error
          * Else add todo to database
          */
+        console.log(req.params);
+        console.log(req.body);
         if(!req.body.todo) {
             throw "Todo must not be empty."
         }
@@ -42,9 +44,25 @@ await dbClient.connect();
         })
     }
 });
+router.get("/:username", async (req, res) => {
+    try {
+      let client = getClient();
+      await client.connect();
+      const db = client.db("todoDB");
+      console.log("Connected successfully to server");
+      const TODO = db.collection("todo");
+      res.json({
+        ok: true,
+        userTodo: await TODO.find({ username: req.params.username }).toArray(),
+      });
+    } catch (error) {
+      console.log(error);
+      res.json({
+        ok: false,
+        error,
+      });
+    }
+  });
 
-router.get("/:username", async(req,res) => {
-    let client = getClient();
-})
 
 module.exports = router;
